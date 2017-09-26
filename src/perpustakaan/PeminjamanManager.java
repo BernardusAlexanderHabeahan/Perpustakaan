@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class PeminjamanManager {
 
     public boolean save(ArrayList<BukuDipinjam> bukuDipinjam) {
-        Perpustakaan.peminjaman = new Peminjaman();
+        Perpustakaan.peminjamanController = new PeminjamanController();
 
         try {
             for (BukuDipinjam mauDipinjam : bukuDipinjam) {

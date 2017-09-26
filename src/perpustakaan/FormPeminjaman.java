@@ -8,6 +8,7 @@ package perpustakaan;
 import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
+import static perpustakaan.Perpustakaan.bukuDipinjam;
 
 /**
  *
@@ -16,6 +17,7 @@ import javax.swing.table.DefaultTableModel;
 public class FormPeminjaman extends javax.swing.JFrame {
 
     ArrayList<BukuDipinjam> bukuDipinjamCollection = new ArrayList<>();
+
     /**
      * Creates new form FormPeminjaman
      */
@@ -61,6 +63,11 @@ public class FormPeminjaman extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         judulBuku.setText("Judul Buku");
+        judulBuku.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                judulBukuActionPerformed(evt);
+            }
+        });
 
         tombolCari.setText("Cari");
         tombolCari.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -95,6 +102,11 @@ public class FormPeminjaman extends javax.swing.JFrame {
         });
 
         tombolBatal.setText("Batal");
+        tombolBatal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tombolBatalActionPerformed(evt);
+            }
+        });
 
         daftarPinjaman.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -163,7 +175,7 @@ public class FormPeminjaman extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addComponent(judulBuku, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(tombolCari)
                             .addComponent(lama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -173,7 +185,7 @@ public class FormPeminjaman extends javax.swing.JFrame {
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tombolKonfirmasi)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         pack();
@@ -197,9 +209,9 @@ public class FormPeminjaman extends javax.swing.JFrame {
         // TODO add your handling code here:
         int lama = Integer.parseInt(this.lama.getText());
         String bukuDipilih = (String) daftarBuku.getModel().getValueAt(daftarBuku.getSelectedRow(), daftarBuku.getSelectedColumn());
-        
+
         Buku buku = new Buku(bukuDipilih);
-        
+
         tambahBuku(buku, lama);
     }//GEN-LAST:event_tombolPinjamMouseClicked
 
@@ -207,6 +219,19 @@ public class FormPeminjaman extends javax.swing.JFrame {
         // TODO add your handling code here:
         pinjam(bukuDipinjamCollection);
     }//GEN-LAST:event_tombolKonfirmasiMouseClicked
+
+    private void judulBukuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_judulBukuActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_judulBukuActionPerformed
+
+    private void tombolBatalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tombolBatalActionPerformed
+        // TODO add your handling code here:
+        String bukuDipilih = (String) daftarPinjaman.getModel().getValueAt(daftarPinjaman.getSelectedRow(), daftarPinjaman.getSelectedColumn());
+
+        BukuDipinjam buku = new BukuDipinjam(bukuDipilih);
+
+        hapusBuku(buku);
+    }//GEN-LAST:event_tombolBatalActionPerformed
 
     public void tampilkan() {
         this.pack();
@@ -218,33 +243,75 @@ public class FormPeminjaman extends javax.swing.JFrame {
     }
 
     public void tambahBuku(Buku buku, int lama) {
-        Perpustakaan.bukuDipinjam = new BukuDipinjam(buku.getJudul());
+        if (lama <= 3) {
 
-        Perpustakaan.bukuDipinjam.setLama(lama);
+            Perpustakaan.bukuDipinjam = new BukuDipinjam(buku.getJudul());
 
-        this.bukuDipinjamCollection.add(Perpustakaan.bukuDipinjam);
-        
-        this.tampilPinjam(this.bukuDipinjamCollection);
+            Perpustakaan.bukuDipinjam.setLama(lama);
+
+            this.bukuDipinjamCollection.add(Perpustakaan.bukuDipinjam);
+
+            this.tampilPinjam(this.bukuDipinjamCollection);
+        } else {
+            Perpustakaan.dialogUI = new DialogUI();
+            Perpustakaan.dialogUI.tampilkan("Lama Peminjaman Maksimal 3 Hari");
+        }
+
     }
 
     public void tampilPinjam(ArrayList<BukuDipinjam> listBuku) {
         //tambah ke tabel pinjaman
-        Object[] namaKolom = {"Judul"};
+        Object[] namaKolom = {"Buku Dipinjam"};
         int jumlahBaris = 0;
 
-        DefaultTableModel model = new DefaultTableModel(namaKolom, jumlahBaris);
+        DefaultTableModel model1 = new DefaultTableModel(namaKolom, jumlahBaris);
 
         Object[] baris = new Object[10];
 
         for (Buku mauDipinjam : listBuku) {
-            model.addRow(new Object[]{mauDipinjam.getJudul()});
+            model1.addRow(new Object[]{mauDipinjam.getJudul()});
         }
+        daftarPinjaman.setModel(model1);
 
-        daftarPinjaman.setModel(model);
+//        DefaultTableModel model2 = new DefaultTableModel(namaKolom, jumlahBaris);
+//
+//        while (model2.getRowCount() > 0) {
+//            for (int i = 0; i < model2.getRowCount(); ++i) {
+//                model2.removeRow(i);
+//            }
+//            daftarPinjaman.setModel(model2);
+//        }
     }
 
-    public void hapusBuku(BukuDipinjam bukuDipinjam) {
+    public void tampilPinjamHapus(ArrayList<BukuDipinjam> listBuku) {
+        
+        Object[] namaKolom = {"Buku Dipinjam"};
+        int jumlahBaris = 0;
 
+        Object[] baris = new Object[10];
+
+        DefaultTableModel model2 = (DefaultTableModel) daftarPinjaman.getModel();
+
+        while (model2.getRowCount() > 0) {
+            for (int i = 0; i < model2.getRowCount(); ++i) {
+                model2.removeRow(i);
+            }
+            daftarPinjaman.setModel(model2);
+        }
+    }
+
+    public void hapusBuku(BukuDipinjam buku) {
+        Perpustakaan.bukuDipinjam = new BukuDipinjam(buku.getJudul());
+        int idx = 0;
+        for (Buku xyz : this.bukuDipinjamCollection) {
+            if (xyz.getJudul() == buku.getJudul()) {
+                this.bukuDipinjamCollection.remove(idx++);
+                break;
+            }
+            idx++;
+        }
+
+        this.tampilPinjam(this.bukuDipinjamCollection);
     }
 
     public void displayBuku(ArrayList<Buku> listBuku) {
@@ -267,15 +334,15 @@ public class FormPeminjaman extends javax.swing.JFrame {
             Perpustakaan.dialogUI.tampilkan("Buku Tidak Ditemukan");
         }
     }
-    
-    public void pinjam(ArrayList<BukuDipinjam> bukuDipinjam){
+
+    public void pinjam(ArrayList<BukuDipinjam> bukuDipinjam) {
         Perpustakaan.peminjamanManager = new PeminjamanManager();
         Perpustakaan.dialogUI = new DialogUI();
-        
+
         if (Perpustakaan.peminjamanManager.save(bukuDipinjam)) {
             Perpustakaan.dialogUI.tampilkan("Peminjaman Telah Dikonfirmasi");
-        }else{
-            System.out.println("Gagal");
+        } else {
+            Perpustakaan.dialogUI.tampilkan("Peminjaman Gagal");
         }
     }
 
@@ -293,16 +360,21 @@ public class FormPeminjaman extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FormPeminjaman.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FormPeminjaman.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FormPeminjaman.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FormPeminjaman.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FormPeminjaman.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FormPeminjaman.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FormPeminjaman.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FormPeminjaman.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
